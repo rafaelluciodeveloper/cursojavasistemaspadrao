@@ -60,4 +60,7 @@ public class Cliente {
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
     }
+    
+    
+    
 }

@@ -2,7 +2,7 @@ package br.com.sistemaspadrao.agenda.util;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import br.com.sistemaspadrao.agenda.conf.Conexao;
 
 /**
  *
@@ -19,8 +19,8 @@ public class AuthUtil {
         this.connection = con;
     }
 
-    public  boolean Autenticar(String login, String senha) throws SQLException {
-        String SQL_USUARIO_SENHA = "SELECT COUNT(*) as qtd_registros FROM usuarios WHERE login='" + login + "' and senha=MD5('" + senha + "')";
+    public  boolean Autenticar(String usuario, String senha){
+        String SQL_USUARIO_SENHA = "SELECT COUNT(*) as qtd_registros FROM usuarios WHERE usuario='" + usuario + "' and senha=MD5('" + senha + "')";
         try {
             rs = connection.createStatement().executeQuery(SQL_USUARIO_SENHA);
             rs.next();
@@ -35,5 +35,5 @@ public class AuthUtil {
 
         return resultado;
     }
-
+    
 }
