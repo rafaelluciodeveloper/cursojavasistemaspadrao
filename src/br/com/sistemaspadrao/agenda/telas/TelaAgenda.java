@@ -1,21 +1,11 @@
 package br.com.sistemaspadrao.agenda.telas;
 
-import br.com.sistemaspadrao.agenda.dao.ClienteDAO;
+import br.com.sistemaspadrao.agenda.dao.ClienteDAOImpl;
 import br.com.sistemaspadrao.agenda.modelos.Cliente;
 import br.com.sistemaspadrao.agenda.tabelas.TabelaClientes;
 import br.com.sistemaspadrao.agenda.util.ReportUtil;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.sql.SQLException;
 import java.util.HashMap;
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 
 /**
  *
@@ -23,34 +13,15 @@ import javax.swing.event.ListSelectionListener;
  */
 public class TelaAgenda extends javax.swing.JFrame {
 
-    private TabelaClientes tabelaClientes;
-    private ClienteDAO clienteDAO;
+    private final TabelaClientes tabelaClientes;
+    private final ClienteDAOImpl clienteDAO;
     private Cliente cliente;
 
     public TelaAgenda() {
-        clienteDAO = new ClienteDAO();
-        tabelaClientes = new TabelaClientes(clienteDAO.tabelaClientes(""));
+        clienteDAO = new ClienteDAOImpl();
+        tabelaClientes = new TabelaClientes(clienteDAO.listarTabelaClientes(""));
         initComponents();
-        personalisarTabela();
-        atalhosBotoes();
-        controleBotoes(true, false, false, false, true);
-
-    }
-
-    public void personalisarTabela() {
-        jTable1.setAutoResizeMode(jTable1.AUTO_RESIZE_OFF);
-        jTable1.getColumnModel().getColumn(0).setPreferredWidth(48);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(350);
-        jTable1.getColumnModel().getColumn(2).setPreferredWidth(130);
-        jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting()) {
-                    return;
-                }
-                preencherCamposTxt();
-            }
-        });
+        jTable1.setAutoResizeMode(jTable1.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
     }
 
     @SuppressWarnings("unchecked")
@@ -60,7 +31,7 @@ public class TelaAgenda extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         txtBuscaNome = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnBuscar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
@@ -79,12 +50,12 @@ public class TelaAgenda extends javax.swing.JFrame {
         txtCodigo = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         btnNovo = new javax.swing.JButton();
-        btnAlterar = new javax.swing.JButton();
         btnSalvar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
         btnRelatorio = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Agenda Telefônica");
         setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Buscar"));
@@ -97,10 +68,10 @@ public class TelaAgenda extends javax.swing.JFrame {
 
         jLabel1.setText("Nome");
 
-        jButton1.setText("Buscar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnBuscarActionPerformed(evt);
             }
         });
 
@@ -114,7 +85,7 @@ public class TelaAgenda extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtBuscaNome, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -124,7 +95,7 @@ public class TelaAgenda extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtBuscaNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1)
-                    .addComponent(jButton1))
+                    .addComponent(btnBuscar))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
@@ -138,7 +109,7 @@ public class TelaAgenda extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel2.setText("Codigo");
+        jLabel2.setText("Código");
 
         jLabel3.setText("Nome");
 
@@ -214,14 +185,27 @@ public class TelaAgenda extends javax.swing.JFrame {
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         btnNovo.setText("Novo");
-
-        btnAlterar.setText("Alterar");
+        btnNovo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNovoActionPerformed(evt);
+            }
+        });
 
         btnSalvar.setText("Salvar");
+        btnSalvar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalvarActionPerformed(evt);
+            }
+        });
 
         btnExcluir.setText("Excluir");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
-        btnRelatorio.setText("Relatorio");
+        btnRelatorio.setText("Relatório");
         btnRelatorio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRelatorioActionPerformed(evt);
@@ -232,21 +216,19 @@ public class TelaAgenda extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnNovo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnAlterar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnSalvar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnExcluir)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnRelatorio)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(84, 84, 84))
         );
 
-        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAlterar, btnExcluir, btnNovo, btnRelatorio, btnSalvar});
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnExcluir, btnNovo, btnRelatorio, btnSalvar});
 
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -254,7 +236,6 @@ public class TelaAgenda extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnNovo)
-                    .addComponent(btnAlterar)
                     .addComponent(btnSalvar)
                     .addComponent(btnExcluir)
                     .addComponent(btnRelatorio))
@@ -298,41 +279,73 @@ public class TelaAgenda extends javax.swing.JFrame {
 
     private void txtBuscaNomeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscaNomeKeyPressed
         if (evt.getKeyCode() == 10) {
-            try {
-                tabelaClientes.setResult(clienteDAO.tabelaClientes(txtBuscaNome.getText()));
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            } finally {
-                personalisarTabela();
-                limparCampos();
-            }
+            tabelaClientes.setResult(clienteDAO.listarTabelaClientes(txtBuscaNome.getText()));
+            limparCampos();
         }
     }//GEN-LAST:event_txtBuscaNomeKeyPressed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            tabelaClientes.setResult(clienteDAO.tabelaClientes(txtBuscaNome.getText()));
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        } finally {
-            personalisarTabela();
-            limparCampos();
-        }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        tabelaClientes.setResult(clienteDAO.listarTabelaClientes(txtBuscaNome.getText()));
+        limparCampos();
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRelatorioActionPerformed
-        new ReportUtil().imprimir("br/com/sistemaspadrao/agenda/relatorios/RelatorioClientes.jasper", new HashMap()," Relatorio Clientes");
+        new ReportUtil().imprimir("/br/com/sistemaspadrao/agenda/relatorios/RelatorioClientes.jasper", new HashMap(), " Relatorio Clientes");
     }//GEN-LAST:event_btnRelatorioActionPerformed
 
+    private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
+        cliente = new Cliente();
+        limparCampos();
+        txtNome.requestFocus();
+    }//GEN-LAST:event_btnNovoActionPerformed
+
+    private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+
+        if (!txtCodigo.getText().equals("")) {
+            cliente.setCodigo(Integer.parseInt(txtCodigo.getText()));
+        }
+
+        cliente.setNome(txtNome.getText());
+        cliente.setEndereco(txtEndereco.getText());
+        cliente.setEmail(txtEmail.getText());
+        cliente.setTelefone(txtTelefone.getText());
+        cliente.setObservacoes(txtObs.getText());
+
+        if (clienteDAO.salvarCliente(cliente)) {
+            JOptionPane.showMessageDialog(this, " Cliente Salvo com Sucesso");
+            tabelaClientes.setResult(clienteDAO.listarTabelaClientes(""));
+        } else {
+            JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
+
+        }
+        limparCampos();
+    }//GEN-LAST:event_btnSalvarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        int op = JOptionPane.showConfirmDialog(this, "Deseja Excluir " + txtNome.getText() + " ?", "Exclusão", JOptionPane.YES_NO_OPTION);
+        if (op == JOptionPane.YES_OPTION) {
+            if (clienteDAO.excluirCliente(Long.parseLong(txtCodigo.getText()))) {
+                JOptionPane.showMessageDialog(this, "Cliente Excluido com Sucesso");
+                tabelaClientes.setResult(clienteDAO.listarTabelaClientes(""));
+            } else {
+                JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
+            }
+            limparCampos();
+        }
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
     private void preencherCamposTxt() {
-        Long codigo = Long.parseLong(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
-        cliente = clienteDAO.selecionar(codigo);
-        txtCodigo.setText(String.valueOf(cliente.getCodigo()));
-        txtNome.setText(cliente.getNome());
-        txtEndereco.setText(cliente.getEndereco());
-        txtEmail.setText(cliente.getEmail());
-        txtTelefone.setText(cliente.getTelefone());
-        txtObs.setText(cliente.getObservacoes());
+        if (jTable1.getSelectedRow() > -1) {
+            Long codigo = Long.parseLong(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
+            cliente = clienteDAO.selecionarCliente(codigo);
+            txtCodigo.setText(String.valueOf(cliente.getCodigo()));
+            txtNome.setText(cliente.getNome());
+            txtEndereco.setText(cliente.getEndereco());
+            txtEmail.setText(cliente.getEmail());
+            txtTelefone.setText(cliente.getTelefone());
+            txtObs.setText(cliente.getObservacoes());
+        }
+
     }
 
     public void limparCampos() {
@@ -342,24 +355,6 @@ public class TelaAgenda extends javax.swing.JFrame {
         txtEmail.setText("");
         txtTelefone.setText("");
         txtObs.setText("");
-    }
-
-    public void atalhosBotoes() {
-        btnNovo.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK), "evento");
-        btnNovo.getActionMap().put("evento", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Teste Ctrl + C");
-            }
-        });
-    }
-
-    public void controleBotoes(boolean novo, boolean alterar, boolean salvar, boolean excluir, boolean relatorio) {
-        btnNovo.setEnabled(novo);
-        btnAlterar.setEnabled(alterar);
-        btnSalvar.setEnabled(salvar);
-        btnExcluir.setEnabled(excluir);
-        btnRelatorio.setEnabled(relatorio);
     }
 
     public static void main(String args[]) {
@@ -395,12 +390,11 @@ public class TelaAgenda extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAlterar;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
     private javax.swing.JButton btnRelatorio;
     private javax.swing.JButton btnSalvar;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

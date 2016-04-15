@@ -1,4 +1,4 @@
-package br.com.sistemaspadrao.agenda.conf;
+package br.com.sistemaspadrao.agenda.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

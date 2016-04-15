@@ -54,13 +54,13 @@
 				</textElement>
 				<text><![CDATA[Ordem Alfabética]]></text>
 			</staticText>
-			<image>
-				<reportElement x="465" y="2" width="87" height="68" uuid="7ea5229d-a401-4ba0-a833-3f9f8cbf6429"/>
-				<imageExpression><![CDATA["C:\\Users\\rafae\\Documents\\NetBeansProjects\\AgendaTelefonica\\src\\br\\com\\sistemaspadrao\\agenda\\imagens\\report_icon.png"]]></imageExpression>
-			</image>
 			<line>
 				<reportElement x="2" y="73" width="553" height="1" uuid="952e2c88-a1c0-4bff-98b7-b9562de8fc4d"/>
 			</line>
+			<image>
+				<reportElement x="477" y="-2" width="74" height="75" uuid="f798fc07-63ed-46e4-a235-9aea1c3b87b7"/>
+				<imageExpression><![CDATA["C:\\Users\\rafae\\Documents\\NetBeansProjects\\AgendaTelefonica\\src\\br\\com\\sistemaspadrao\\agenda\\relatorios\\report_icon.png"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>

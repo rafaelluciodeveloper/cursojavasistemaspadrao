@@ -1,6 +1,5 @@
 package br.com.sistemaspadrao.agenda.util;
 
-import br.com.sistemaspadrao.agenda.conf.Conexao;
 import java.util.HashMap;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;

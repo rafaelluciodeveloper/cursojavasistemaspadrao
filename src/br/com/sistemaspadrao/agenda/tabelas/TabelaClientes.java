@@ -3,6 +3,8 @@ package br.com.sistemaspadrao.agenda.tabelas;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -18,11 +20,7 @@ public class TabelaClientes extends AbstractTableModel {
     private ArrayList<String[]> ResultSets;
 
     public TabelaClientes(ResultSet rs) {
-        try {
-            setResult(rs);
-        } catch (SQLException e) {
-            e.getMessage();
-        }
+        setResult(rs);
     }
 
     @Override
@@ -46,17 +44,21 @@ public class TabelaClientes extends AbstractTableModel {
         return row[columnIndex];
     }
 
-    public void setResult(ResultSet rs) throws SQLException {
+    public void setResult(ResultSet rs)  {
 
         ResultSets = new ArrayList<String[]>();
 
-        while (rs.next()) {
-            String[] row = {
-                rs.getString("codigo"),
-                rs.getString("nome"),
-                rs.getString("telefone")
-            };
-            ResultSets.add(row);
+        try {
+            while (rs.next()) {
+                String[] row = {
+                    rs.getString("codigo"),
+                    rs.getString("nome"),
+                    rs.getString("telefone")
+                };
+                ResultSets.add(row);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
 
         fireTableStructureChanged();
