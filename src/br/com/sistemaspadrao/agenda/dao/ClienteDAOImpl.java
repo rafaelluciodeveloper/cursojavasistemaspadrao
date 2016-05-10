@@ -16,66 +16,24 @@ import java.util.ArrayList;
  */
 public class ClienteDAOImpl implements ClienteDAO {
 
-    private final Connection connection;
-    private PreparedStatement preparedStatement;
-    private Statement statement;
-    private ResultSet resultSet;
-    private Cliente cliente;
-
-    public ClienteDAOImpl() {
-        connection = new Conexao().abrirConexao();
-    }
+    private Connection conexao;
 
     @Override
-    public boolean salvarCliente(Cliente cliente) {
-        boolean retorno = false;
+    public boolean cadastrarCliente(Cliente cliente) {
         String SQL_NOVO = "INSERT INTO clientes (nome,endereco,email,telefone,observacoes) VALUES (?,?,?,?,?)";
-        String SQL_ATUALIZAR = "UPDATE clientes SET nome=?,endereco=?,email=?,telefone=?,observacoes=? WHERE codigo=?";
-        if (cliente.getCodigo() == 0) {
-            try {
-                preparedStatement = connection.prepareStatement(SQL_NOVO);
-                preparedStatement.setString(1, cliente.getNome());
-                preparedStatement.setString(2, cliente.getEndereco());
-                preparedStatement.setString(3, cliente.getEmail());
-                preparedStatement.setString(4, cliente.getTelefone());
-                preparedStatement.setString(5, cliente.getObservacoes());
-                preparedStatement.executeUpdate();
-                preparedStatement.close();
-                retorno = true;
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
-        } else {
-            try {
-                preparedStatement = connection.prepareStatement(SQL_ATUALIZAR);
-                preparedStatement.setString(1, cliente.getNome());
-                preparedStatement.setString(2, cliente.getEndereco());
-                preparedStatement.setString(3, cliente.getEmail());
-                preparedStatement.setString(4, cliente.getTelefone());
-                preparedStatement.setString(5, cliente.getObservacoes());
-                preparedStatement.setInt(6, cliente.getCodigo());
-                preparedStatement.executeUpdate();
-                preparedStatement.close();
-                retorno = true;
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-
-            }
-
-        }
-
-        return retorno;
-    }
-
-    @Override
-    public boolean excluirCliente(Long codigo) {
         boolean retorno = false;
-        String SQL_EXCLUIR = "DELETE FROM clientes WHERE codigo=?";
         try {
-            preparedStatement = connection.prepareStatement(SQL_EXCLUIR);
-            preparedStatement.setLong(1, codigo);
+            conexao = new Conexao().abrirConexao();
+            PreparedStatement preparedStatement;
+            preparedStatement = conexao.prepareStatement(SQL_NOVO);
+            preparedStatement.setString(1, cliente.getNome());
+            preparedStatement.setString(2, cliente.getEndereco());
+            preparedStatement.setString(3, cliente.getEmail());
+            preparedStatement.setString(4, cliente.getTelefone());
+            preparedStatement.setString(5, cliente.getObservacoes());
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            conexao.close();
             retorno = true;
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -84,33 +42,60 @@ public class ClienteDAOImpl implements ClienteDAO {
     }
 
     @Override
-    public Cliente selecionarCliente(Long codigo) {
-        cliente = new Cliente();
-        String SQL_SELECT_CLIENTES = "SELECT * FROM clientes WHERE codigo=" + codigo;
+    public boolean alterarCliente(Cliente cliente) {
+        String SQL_ATUALIZAR = "UPDATE clientes SET nome=?,endereco=?,email=?,telefone=?,observacoes=? WHERE codigo=?";
+        boolean retorno = false;
         try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(SQL_SELECT_CLIENTES);
-            while (resultSet.next()) {
-                cliente.setCodigo(resultSet.getInt("codigo"));
-                cliente.setNome(resultSet.getString("nome"));
-                cliente.setEndereco(resultSet.getString("endereco"));
-                cliente.setEmail(resultSet.getString("email"));
-                cliente.setTelefone(resultSet.getString("telefone"));
-                cliente.setObservacoes(resultSet.getString("observacoes"));
-            }
+            conexao = new Conexao().abrirConexao();
+            PreparedStatement preparedStatement;
+            preparedStatement = conexao.prepareStatement(SQL_ATUALIZAR);
+            preparedStatement.setString(1, cliente.getNome());
+            preparedStatement.setString(2, cliente.getEndereco());
+            preparedStatement.setString(3, cliente.getEmail());
+            preparedStatement.setString(4, cliente.getTelefone());
+            preparedStatement.setString(5, cliente.getObservacoes());
+            preparedStatement.setInt(6, cliente.getCodigo());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            conexao.close();
+            retorno = true;
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+
         }
-        return cliente;
+        return retorno;
     }
 
     @Override
-    public List<Cliente> listarClientes() {
-        ArrayList<Cliente> clientes = new ArrayList<>();
-        String SQL_SELECT_ALL = "SELECT * FROM clientes";
+    public boolean excluirCliente(Long codigo) {
+        String SQL_EXCLUIR = "DELETE FROM clientes WHERE codigo=?";
+        boolean retorno = false;
         try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(SQL_SELECT_ALL);
+            conexao = new Conexao().abrirConexao();
+            PreparedStatement preparedStatement;
+            preparedStatement = conexao.prepareStatement(SQL_EXCLUIR);
+            preparedStatement.setLong(1, codigo);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            conexao.close();
+            retorno = true;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return retorno;
+    }
+
+    @Override
+    public List<Cliente> listarClientes(String nome) {
+        String SQL_LISTAR = "SELECT * FROM clientes WHERE nome LIKE"+"'%"+nome+"%'";
+        ArrayList<Cliente> clientes = new ArrayList<>();
+        Cliente cliente;
+        try {
+            conexao = new Conexao().abrirConexao();
+            Statement statement;
+            ResultSet resultSet;
+            statement = conexao.createStatement();
+            resultSet = statement.executeQuery(SQL_LISTAR);
             while (resultSet.next()) {
                 cliente = new Cliente();
                 cliente.setCodigo(resultSet.getInt("codigo"));
@@ -123,23 +108,11 @@ public class ClienteDAOImpl implements ClienteDAO {
             }
             statement.close();
             resultSet.close();
+            conexao.close();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         return clientes;
-    }
-
-    @Override
-    public ResultSet listarTabelaClientes(String nome) {
-        String SELECT = "SELECT * FROM clientes WHERE nome like '%" + nome + "%'";
-        try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(SELECT);
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        return resultSet;
     }
 
 }

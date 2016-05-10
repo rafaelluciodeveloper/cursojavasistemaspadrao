@@ -11,13 +11,15 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TelaAgenda extends javax.swing.JFrame {
 
-    private final ClienteDAOImpl clienteDAO;
+    private ClienteDAOImpl clienteDAO;
     private Cliente cliente;
     private DefaultTableModel modelo = new DefaultTableModel();
 
     public TelaAgenda() {
         clienteDAO = new ClienteDAOImpl();
         initComponents();
+        personalisarTabela();
+        atualizarTabela(modelo, "");
     }
 
     @SuppressWarnings("unchecked")
@@ -94,7 +96,7 @@ public class TelaAgenda extends javax.swing.JFrame {
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
-        jTable1.setModel(tabelaClientes);
+        jTable1.setModel(modelo);
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
@@ -205,13 +207,13 @@ public class TelaAgenda extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(277, Short.MAX_VALUE)
                 .addComponent(btnNovo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSalvar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnExcluir)
-                .addGap(18, 18, 18))
+                .addGap(22, 22, 22))
         );
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnExcluir, btnNovo, btnSalvar});
@@ -263,16 +265,15 @@ public class TelaAgenda extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void txtBuscaNomeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscaNomeKeyPressed
-//        if (evt.getKeyCode() == 10) {
-//            tabelaClientes.setResult(clienteDAO.listarTabelaClientes(txtBuscaNome.getText()));
-//            limparCampos();
-//        }
+        if (evt.getKeyCode() == 10) {
+            buscar();
+        }
     }//GEN-LAST:event_txtBuscaNomeKeyPressed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-//        tabelaClientes.setResult(clienteDAO.listarTabelaClientes(txtBuscaNome.getText()));
-//        limparCampos();
+        buscar();
     }//GEN-LAST:event_btnBuscarActionPerformed
+
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         cliente = new Cliente();
@@ -282,23 +283,33 @@ public class TelaAgenda extends javax.swing.JFrame {
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
 
+        cliente = new Cliente();
+
         if (!txtCodigo.getText().equals("")) {
             cliente.setCodigo(Integer.parseInt(txtCodigo.getText()));
-        }
-
-        cliente.setNome(txtNome.getText());
-        cliente.setEndereco(txtEndereco.getText());
-        cliente.setEmail(txtEmail.getText());
-        cliente.setTelefone(txtTelefone.getText());
-        cliente.setObservacoes(txtObs.getText());
-
-        if (clienteDAO.salvarCliente(cliente)) {
-            JOptionPane.showMessageDialog(this, " Cliente Salvo com Sucesso");
-            //tabelaClientes.setResult(clienteDAO.listarTabelaClientes(""));
+            cliente.setNome(txtNome.getText());
+            cliente.setEndereco(txtEndereco.getText());
+            cliente.setEmail(txtEmail.getText());
+            cliente.setTelefone(txtTelefone.getText());
+            cliente.setObservacoes(txtObs.getText());
+            if (clienteDAO.alterarCliente(cliente)) {
+                JOptionPane.showMessageDialog(this, " Cliente Alterado com Sucesso");
+            } else {
+                JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
-
+            cliente.setNome(txtNome.getText());
+            cliente.setEndereco(txtEndereco.getText());
+            cliente.setEmail(txtEmail.getText());
+            cliente.setTelefone(txtTelefone.getText());
+            cliente.setObservacoes(txtObs.getText());
+            if (clienteDAO.cadastrarCliente(cliente)) {
+                JOptionPane.showMessageDialog(this, " Cliente Salvo com Sucesso");
+            } else {
+                JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
+            }
         }
+        atualizarTabela(modelo, "");
         limparCampos();
     }//GEN-LAST:event_btnSalvarActionPerformed
 
@@ -307,7 +318,7 @@ public class TelaAgenda extends javax.swing.JFrame {
         if (op == JOptionPane.YES_OPTION) {
             if (clienteDAO.excluirCliente(Long.parseLong(txtCodigo.getText()))) {
                 JOptionPane.showMessageDialog(this, "Cliente Excluido com Sucesso");
-                //tabelaClientes.setResult(clienteDAO.listarTabelaClientes(""));
+                atualizarTabela(modelo, "");
             } else {
                 JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
             }
@@ -317,14 +328,12 @@ public class TelaAgenda extends javax.swing.JFrame {
 
     private void preencherCamposTxt() {
         if (jTable1.getSelectedRow() > -1) {
-            Long codigo = Long.parseLong(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
-            cliente = clienteDAO.selecionarCliente(codigo);
-            txtCodigo.setText(String.valueOf(cliente.getCodigo()));
-            txtNome.setText(cliente.getNome());
-            txtEndereco.setText(cliente.getEndereco());
-            txtEmail.setText(cliente.getEmail());
-            txtTelefone.setText(cliente.getTelefone());
-            txtObs.setText(cliente.getObservacoes());
+            txtCodigo.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
+            txtNome.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString());
+            txtEndereco.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 2).toString());
+            txtEmail.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 3).toString());
+            txtTelefone.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 4).toString());
+            txtObs.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 5).toString());
         }
 
     }
@@ -336,14 +345,31 @@ public class TelaAgenda extends javax.swing.JFrame {
         txtEmail.setText("");
         txtTelefone.setText("");
         txtObs.setText("");
+        txtBuscaNome.setText("");
     }
 
-    public static void atualizarTabela(DefaultTableModel modelo) {
+    public static void atualizarTabela(DefaultTableModel modelo, String nome) {
         modelo.setNumRows(0);
         ClienteDAOImpl clienteDAOImpl = new ClienteDAOImpl();
-        for (Cliente c : clienteDAOImpl.listarClientes()) {
+        for (Cliente c : clienteDAOImpl.listarClientes(nome)) {
             modelo.addRow(new Object[]{c.getCodigo(), c.getNome(), c.getEndereco(), c.getEmail(), c.getTelefone(), c.getObservacoes()});
         }
+
+    }
+
+    private void buscar() {
+        atualizarTabela(modelo, txtBuscaNome.getText());
+        System.out.println(txtBuscaNome.getText());
+        limparCampos();
+    }
+
+    private void personalisarTabela() {
+        modelo.addColumn("Codigo");
+        modelo.addColumn("Nome");
+        modelo.addColumn("Endereço");
+        modelo.addColumn("E-mail");
+        modelo.addColumn("Telefone");
+        modelo.addColumn("Observações");
     }
 
     public static void main(String args[]) {

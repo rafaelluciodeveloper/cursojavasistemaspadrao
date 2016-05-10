@@ -11,33 +11,20 @@ import javax.swing.JOptionPane;
  */
 public class Conexao {
 
-    private Connection connection = null;
-
     public Connection abrirConexao() {
+        Connection conexao = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/agendatelefonica","root","");
+            conexao = DriverManager.getConnection("jdbc:mysql://localhost:3306/agendatelefonica", "root", "");
             System.out.println("Conexao Efetuada com Sucesso");
         } catch (SQLException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
-
-        return connection;
-    }
-
-    public void fecharConexao(Connection connection) {
-        try {
-            connection.close();
-            System.out.println("Conexão Fechada");
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-        }
-
+        return conexao;
     }
 
     public static void main(String[] args) {
-        Connection con = new Conexao().abrirConexao();
-        new Conexao().fecharConexao(con);
+        new Conexao().abrirConexao();
 
     }
 
