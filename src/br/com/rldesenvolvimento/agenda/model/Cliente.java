@@ -1,4 +1,4 @@
-package br.com.sistemaspadrao.agenda.modelos;
+package br.com.rldesenvolvimento.agenda.model;
 
 /**
  *

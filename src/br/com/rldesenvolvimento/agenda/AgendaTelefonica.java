@@ -1,6 +1,6 @@
-package br.com.sistemaspadrao.agenda;
+package br.com.rldesenvolvimento.agenda;
 
-import br.com.sistemaspadrao.agenda.telas.TelaAgenda;
+import br.com.rldesenvolvimento.agenda.view.TelaAgenda;
 
 /**
  *

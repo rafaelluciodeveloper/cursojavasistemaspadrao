@@ -1,7 +1,7 @@
-package br.com.sistemaspadrao.agenda.telas;
+package br.com.rldesenvolvimento.agenda.view;
 
-import br.com.sistemaspadrao.agenda.dao.ClienteDAOImpl;
-import br.com.sistemaspadrao.agenda.modelos.Cliente;
+import br.com.rldesenvolvimento.agenda.controller.ClienteController;
+import br.com.rldesenvolvimento.agenda.model.Cliente;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -11,12 +11,12 @@ import javax.swing.table.DefaultTableModel;
  */
 public class TelaAgenda extends javax.swing.JFrame {
 
-    private ClienteDAOImpl clienteDAO;
+    private ClienteController clienteController;
     private Cliente cliente;
     private DefaultTableModel modelo = new DefaultTableModel();
 
     public TelaAgenda() {
-        clienteDAO = new ClienteDAOImpl();
+        clienteController = new ClienteController();
         initComponents();
         personalisarTabela();
         atualizarTabela(modelo, "");
@@ -31,7 +31,7 @@ public class TelaAgenda extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btnBuscar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblClientes = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -50,6 +50,7 @@ public class TelaAgenda extends javax.swing.JFrame {
         btnNovo = new javax.swing.JButton();
         btnSalvar = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
+        btnSair = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Agenda Telefônica");
@@ -82,7 +83,7 @@ public class TelaAgenda extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtBuscaNome, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -96,13 +97,13 @@ public class TelaAgenda extends javax.swing.JFrame {
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
-        jTable1.setModel(modelo);
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblClientes.setModel(modelo);
+        tblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
+                tblClientesMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblClientes);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -202,31 +203,38 @@ public class TelaAgenda extends javax.swing.JFrame {
             }
         });
 
+        btnSair.setText("Sair");
+        btnSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSairActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(277, Short.MAX_VALUE)
-                .addComponent(btnNovo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnSalvar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnExcluir)
-                .addGap(22, 22, 22))
-        );
-
-        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnExcluir, btnNovo, btnSalvar});
-
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(btnNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(165, 165, 165)
+                .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnNovo)
                     .addComponent(btnSalvar)
-                    .addComponent(btnExcluir))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnExcluir)
+                    .addComponent(btnSair))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -260,14 +268,12 @@ public class TelaAgenda extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+    private void tblClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblClientesMouseClicked
         preencherCamposTxt();
-    }//GEN-LAST:event_jTable1MouseClicked
+    }//GEN-LAST:event_tblClientesMouseClicked
 
     private void txtBuscaNomeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscaNomeKeyPressed
-        if (evt.getKeyCode() == 10) {
-            buscar();
-        }
+
     }//GEN-LAST:event_txtBuscaNomeKeyPressed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
@@ -276,69 +282,61 @@ public class TelaAgenda extends javax.swing.JFrame {
 
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
-        cliente = new Cliente();
+        habilitarBotoes(false, false, true, false);
         limparCampos();
         txtNome.requestFocus();
     }//GEN-LAST:event_btnNovoActionPerformed
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-
-        cliente = new Cliente();
-
-        if (!txtCodigo.getText().equals("")) {
-            cliente.setCodigo(Integer.parseInt(txtCodigo.getText()));
-            cliente.setNome(txtNome.getText());
-            cliente.setEndereco(txtEndereco.getText());
-            cliente.setEmail(txtEmail.getText());
-            cliente.setTelefone(txtTelefone.getText());
-            cliente.setObservacoes(txtObs.getText());
-            if (clienteDAO.alterarCliente(cliente)) {
-                JOptionPane.showMessageDialog(this, " Cliente Alterado com Sucesso");
-            } else {
-                JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
-            }
+        if (txtCodigo.getText().equals("")) {
+            clienteController.salvar(txtNome.getText(), txtEndereco.getText(), txtEndereco.getText(), txtTelefone.getText(), txtObs.getText());
+            JOptionPane.showMessageDialog(this, "Cliente Incluido");
         } else {
-            cliente.setNome(txtNome.getText());
-            cliente.setEndereco(txtEndereco.getText());
-            cliente.setEmail(txtEmail.getText());
-            cliente.setTelefone(txtTelefone.getText());
-            cliente.setObservacoes(txtObs.getText());
-            if (clienteDAO.cadastrarCliente(cliente)) {
-                JOptionPane.showMessageDialog(this, " Cliente Salvo com Sucesso");
-            } else {
-                JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
-            }
+            clienteController.alterar(Integer.parseInt(txtCodigo.getText()), txtNome.getText(), txtEndereco.getText(), txtEmail.getText(), txtTelefone.getText(), txtObs.getText());
+            JOptionPane.showMessageDialog(this, "Cliente Alterado");
         }
+
         atualizarTabela(modelo, "");
         limparCampos();
+        habilitarBotoes(true, true, true, true);
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        int op = JOptionPane.showConfirmDialog(this, "Deseja Excluir " + txtNome.getText() + " ?", "Exclusão", JOptionPane.YES_NO_OPTION);
+        int op = JOptionPane.showConfirmDialog(this, "Deseja Excluir " + txtNome.getText() + " ?", "Exclusão", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
         if (op == JOptionPane.YES_OPTION) {
-            if (clienteDAO.excluirCliente(Long.parseLong(txtCodigo.getText()))) {
-                JOptionPane.showMessageDialog(this, "Cliente Excluido com Sucesso");
-                atualizarTabela(modelo, "");
-            } else {
-                JOptionPane.showMessageDialog(this, "Não Foi Possivel Efetuar Operação");
-            }
+            clienteController.excluir(Integer.parseInt(txtCodigo.getText()));
+            JOptionPane.showMessageDialog(this, "Cliente Excluido ");
+            atualizarTabela(modelo, "");
             limparCampos();
         }
     }//GEN-LAST:event_btnExcluirActionPerformed
 
+    private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
+        int op = JOptionPane.showConfirmDialog(this, "Deseja Sair Do Sistema", "Agenda 1.0", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (op == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }//GEN-LAST:event_btnSairActionPerformed
+
     private void preencherCamposTxt() {
-        if (jTable1.getSelectedRow() > -1) {
-            txtCodigo.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
-            txtNome.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString());
-            txtEndereco.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 2).toString());
-            txtEmail.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 3).toString());
-            txtTelefone.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 4).toString());
-            txtObs.setText(jTable1.getValueAt(jTable1.getSelectedRow(), 5).toString());
+        if (tblClientes.getSelectedRow() > -1) {
+            txtCodigo.setText(tblClientes.getValueAt(tblClientes.getSelectedRow(), 0).toString());
+            txtNome.setText(tblClientes.getValueAt(tblClientes.getSelectedRow(), 1).toString());
+            txtEndereco.setText(tblClientes.getValueAt(tblClientes.getSelectedRow(), 2).toString());
+            txtEmail.setText(tblClientes.getValueAt(tblClientes.getSelectedRow(), 3).toString());
+            txtTelefone.setText(tblClientes.getValueAt(tblClientes.getSelectedRow(), 4).toString());
+            txtObs.setText(tblClientes.getValueAt(tblClientes.getSelectedRow(), 5).toString());
         }
 
     }
 
     public void limparCampos() {
+
+//        Component[] campos = jPanel2.getComponents();
+//        for (Component campo : campos) {
+//            JTextField j = (JTextField) campo;
+//            j.setText("");
+//        }
         txtCodigo.setText("");
         txtNome.setText("");
         txtEndereco.setText("");
@@ -348,10 +346,9 @@ public class TelaAgenda extends javax.swing.JFrame {
         txtBuscaNome.setText("");
     }
 
-    public static void atualizarTabela(DefaultTableModel modelo, String nome) {
+    public void atualizarTabela(DefaultTableModel modelo, String nome) {
         modelo.setNumRows(0);
-        ClienteDAOImpl clienteDAOImpl = new ClienteDAOImpl();
-        for (Cliente c : clienteDAOImpl.listarClientes(nome)) {
+        for (Cliente c : clienteController.lista(nome)) {
             modelo.addRow(new Object[]{c.getCodigo(), c.getNome(), c.getEndereco(), c.getEmail(), c.getTelefone(), c.getObservacoes()});
         }
 
@@ -359,7 +356,6 @@ public class TelaAgenda extends javax.swing.JFrame {
 
     private void buscar() {
         atualizarTabela(modelo, txtBuscaNome.getText());
-        System.out.println(txtBuscaNome.getText());
         limparCampos();
     }
 
@@ -370,6 +366,13 @@ public class TelaAgenda extends javax.swing.JFrame {
         modelo.addColumn("E-mail");
         modelo.addColumn("Telefone");
         modelo.addColumn("Observações");
+    }
+
+    private void habilitarBotoes(boolean bBuscar, boolean bNovo, boolean bSalvar, boolean bExcluir) {
+        btnBuscar.setEnabled(bNovo);
+        btnNovo.setEnabled(bNovo);
+        btnSalvar.setEnabled(bSalvar);
+        btnExcluir.setEnabled(bExcluir);
     }
 
     public static void main(String args[]) {
@@ -383,16 +386,24 @@ public class TelaAgenda extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TelaAgenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaAgenda.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TelaAgenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaAgenda.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TelaAgenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaAgenda.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TelaAgenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaAgenda.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -408,6 +419,7 @@ public class TelaAgenda extends javax.swing.JFrame {
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
+    private javax.swing.JButton btnSair;
     private javax.swing.JButton btnSalvar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -421,7 +433,7 @@ public class TelaAgenda extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblClientes;
     private javax.swing.JTextField txtBuscaNome;
     private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextField txtEmail;

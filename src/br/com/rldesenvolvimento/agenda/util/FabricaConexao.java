@@ -1,4 +1,4 @@
-package br.com.sistemaspadrao.agenda.util;
+package br.com.rldesenvolvimento.agenda.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,9 +9,9 @@ import javax.swing.JOptionPane;
  *
  * @author Rafael Da Silva lucio | rafaellucio.developer@gmail.com
  */
-public class Conexao {
+public class FabricaConexao {
 
-    public Connection abrirConexao() {
+    public static Connection abrirConexao() {
         Connection conexao = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -23,9 +23,16 @@ public class Conexao {
         return conexao;
     }
 
-    public static void main(String[] args) {
-        new Conexao().abrirConexao();
+    public static void fecharConexao(Connection connection) {
+        try {
+            connection.close();
+        } catch (SQLException ex) {
+            System.out.println("Não Possivel Fechar Conexao " + ex.getMessage());
+        }
+    }
 
+    public static void main(String[] args) {
+        FabricaConexao.abrirConexao();
     }
 
 }

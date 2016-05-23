@@ -1,13 +1,12 @@
-package br.com.sistemaspadrao.agenda.dao;
+package br.com.rldesenvolvimento.agenda.model.dao;
 
-import br.com.sistemaspadrao.agenda.util.Conexao;
-import br.com.sistemaspadrao.agenda.modelos.Cliente;
+import br.com.rldesenvolvimento.agenda.util.FabricaConexao;
+import br.com.rldesenvolvimento.agenda.model.Cliente;
 import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
@@ -19,13 +18,12 @@ public class ClienteDAOImpl implements ClienteDAO {
     private Connection conexao;
 
     @Override
-    public boolean cadastrarCliente(Cliente cliente) {
+    public void cadastrarCliente(Cliente cliente) {
         String SQL_NOVO = "INSERT INTO clientes (nome,endereco,email,telefone,observacoes) VALUES (?,?,?,?,?)";
         boolean retorno = false;
         try {
-            conexao = new Conexao().abrirConexao();
-            PreparedStatement preparedStatement;
-            preparedStatement = conexao.prepareStatement(SQL_NOVO);
+            conexao = FabricaConexao.abrirConexao();
+            PreparedStatement preparedStatement = conexao.prepareStatement(SQL_NOVO);
             preparedStatement.setString(1, cliente.getNome());
             preparedStatement.setString(2, cliente.getEndereco());
             preparedStatement.setString(3, cliente.getEmail());
@@ -33,22 +31,20 @@ public class ClienteDAOImpl implements ClienteDAO {
             preparedStatement.setString(5, cliente.getObservacoes());
             preparedStatement.executeUpdate();
             preparedStatement.close();
-            conexao.close();
             retorno = true;
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Não Foi possivel Inserir Cliente" + ex.getMessage());
+        } finally {
+            FabricaConexao.fecharConexao(conexao);
         }
-        return retorno;
     }
 
     @Override
-    public boolean alterarCliente(Cliente cliente) {
+    public void alterarCliente(Cliente cliente) {
         String SQL_ATUALIZAR = "UPDATE clientes SET nome=?,endereco=?,email=?,telefone=?,observacoes=? WHERE codigo=?";
-        boolean retorno = false;
         try {
-            conexao = new Conexao().abrirConexao();
-            PreparedStatement preparedStatement;
-            preparedStatement = conexao.prepareStatement(SQL_ATUALIZAR);
+            conexao = FabricaConexao.abrirConexao();
+            PreparedStatement preparedStatement = conexao.prepareStatement(SQL_ATUALIZAR);
             preparedStatement.setString(1, cliente.getNome());
             preparedStatement.setString(2, cliente.getEndereco());
             preparedStatement.setString(3, cliente.getEmail());
@@ -57,47 +53,40 @@ public class ClienteDAOImpl implements ClienteDAO {
             preparedStatement.setInt(6, cliente.getCodigo());
             preparedStatement.executeUpdate();
             preparedStatement.close();
-            conexao.close();
-            retorno = true;
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-
+            System.out.println(" Não Foi Possivel Alterar Cliente " + ex.getMessage());
+        } finally {
+            FabricaConexao.fecharConexao(conexao);
         }
-        return retorno;
     }
 
     @Override
-    public boolean excluirCliente(Long codigo) {
+    public void excluirCliente(int codigo) {
         String SQL_EXCLUIR = "DELETE FROM clientes WHERE codigo=?";
-        boolean retorno = false;
         try {
-            conexao = new Conexao().abrirConexao();
-            PreparedStatement preparedStatement;
-            preparedStatement = conexao.prepareStatement(SQL_EXCLUIR);
-            preparedStatement.setLong(1, codigo);
+            conexao = FabricaConexao.abrirConexao();
+            PreparedStatement preparedStatement = conexao.prepareStatement(SQL_EXCLUIR);;
+            preparedStatement.setInt(1, codigo);
             preparedStatement.executeUpdate();
             preparedStatement.close();
-            conexao.close();
-            retorno = true;
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Não Foi Possivel Excluir Cliente " + ex.getMessage());
+        } finally {
+            FabricaConexao.fecharConexao(conexao);
         }
-        return retorno;
     }
 
     @Override
     public List<Cliente> listarClientes(String nome) {
-        String SQL_LISTAR = "SELECT * FROM clientes WHERE nome LIKE"+"'%"+nome+"%'";
-        ArrayList<Cliente> clientes = new ArrayList<>();
-        Cliente cliente;
+        String SQL_LISTAR = "SELECT * FROM clientes WHERE nome LIKE '%' ? '%'";
+        List<Cliente> clientes = new ArrayList<>();
         try {
-            conexao = new Conexao().abrirConexao();
-            Statement statement;
-            ResultSet resultSet;
-            statement = conexao.createStatement();
-            resultSet = statement.executeQuery(SQL_LISTAR);
+            conexao = FabricaConexao.abrirConexao();
+            PreparedStatement preparedStatement = conexao.prepareStatement(SQL_LISTAR);
+            preparedStatement.setString(1, nome);
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                cliente = new Cliente();
+                Cliente cliente = new Cliente();
                 cliente.setCodigo(resultSet.getInt("codigo"));
                 cliente.setNome(resultSet.getString("nome"));
                 cliente.setEndereco(resultSet.getString("endereco"));
@@ -106,11 +95,12 @@ public class ClienteDAOImpl implements ClienteDAO {
                 cliente.setObservacoes(resultSet.getString("observacoes"));
                 clientes.add(cliente);
             }
-            statement.close();
+            preparedStatement.close();
             resultSet.close();
-            conexao.close();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        } finally {
+            FabricaConexao.fecharConexao(conexao);
         }
         return clientes;
     }
