@@ -331,12 +331,6 @@ public class TelaAgenda extends javax.swing.JFrame {
     }
 
     public void limparCampos() {
-
-//        Component[] campos = jPanel2.getComponents();
-//        for (Component campo : campos) {
-//            JTextField j = (JTextField) campo;
-//            j.setText("");
-//        }
         txtCodigo.setText("");
         txtNome.setText("");
         txtEndereco.setText("");
